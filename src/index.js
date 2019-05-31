@@ -93,16 +93,7 @@ class Game extends React.Component {
     const winner = calculateWinner(current.squares);
     const posizione = current.posizione;
 
-    const posizioni = history.map((step, pos) => {
-      const desc = pos ?
-        'Posizione: ' + pos :
-        'Start game';
-      return (
-        <li key={pos}>
-          <button onClick={() => this.jumpTo(pos)}>{desc}</button>
-        </li>
-      );
-    });
+    const la_posizione = calcola_posizione(posizione);
 
     const moves = history.map((step, move) => {
       const desc = move ?
@@ -110,7 +101,7 @@ class Game extends React.Component {
         'Start game';
       return (
         <li key={move}>
-          <button onClick={() => this.jumpTo(move)}>{desc}</button>
+          <button onClick={() => this.jumpTo(move)}>{posizione} {desc}</button>
         </li>
       );
     });
@@ -132,7 +123,7 @@ class Game extends React.Component {
         </div>
         <div className="game-info">
           <div>{status}</div>
-          <ol>{posizioni} {moves}</ol>
+          <ol>{moves}</ol>
         </div>
       </div>
     );
@@ -143,6 +134,13 @@ class Game extends React.Component {
 
 ReactDOM.render(<Game />, document.getElementById("root"));
 
+function calcola_posizione(p){
+  const ret = "";
+
+  if(p == 4)
+    ret = "2,2"
+  return "Mossa (" + ret + ")";
+}
 
 function calculateWinner(squares) {
   const lines = [
