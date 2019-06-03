@@ -67,7 +67,7 @@ class Game extends React.Component {
       return;
     }
     squares[i] = this.state.xIsNext ? "X" : "O";
-    posizione[i] = i;
+    posizione[i] = calcola_posizione(i);
     this.setState({
       history: history.concat([
         {
@@ -93,15 +93,13 @@ class Game extends React.Component {
     const winner = calculateWinner(current.squares);
     const posizione = current.posizione;
 
-    const la_posizione = calcola_posizione(posizione);
-
     const moves = history.map((step, move) => {
       const desc = move ?
         'Torna alla mossa #' + move :
         'Start game';
       return (
         <li key={move}>
-          <button onClick={() => this.jumpTo(move)}>{posizione} {desc}</button>
+          <button onClick={() => this.jumpTo(move)}>{move} {calcola_posizione(move)} {desc}</button>
         </li>
       );
     });
@@ -131,16 +129,28 @@ class Game extends React.Component {
 }
 
 // ========================================
-
 ReactDOM.render(<Game />, document.getElementById("root"));
 
-function calcola_posizione(p){
-  const ret = "";
 
-  if(p == 4)
-    ret = "2,2"
-  return "Mossa (" + ret + ")";
+function calcola_posizione(indice){
+  const caselle = [
+    ['a','d'],
+    ['b','d'],
+    ['c','d'],
+    ['a','e'],
+    ['b','e'],
+    ['c','e'],
+    ['a','f'],
+    ['b','f'],
+    ['c','f'],
+  ];
+  for (let i = 0; i < caselle.length; i++) {
+      if(i == indice){
+        return "(" + caselle[i] + ")";
+      }
+  }
 }
+
 
 function calculateWinner(squares) {
   const lines = [
