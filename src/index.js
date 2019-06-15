@@ -55,6 +55,7 @@ class Game extends React.Component {
       ],
       stepNumber: 0,
       xIsNext: true,
+      evidenza: false,
     };
   }
 
@@ -83,7 +84,8 @@ class Game extends React.Component {
   jumpTo(step) {
     this.setState({
       stepNumber: step,
-      xIsNext: (step % 2) === 0
+      xIsNext: (step % 2) === 0,
+      evidenza: true,
     });
   }
 
@@ -92,14 +94,17 @@ class Game extends React.Component {
     const current = history[this.state.stepNumber];
     const winner = calculateWinner(current.squares);
     const posizione = current.posizione;
+    const evidenza = current.evidenza;
 
     const moves = history.map((step, move) => {
       const desc = move ?
         'Torna alla mossa #' + move :
         'Start game';
+      const inevid = evidenza ?
+        'SI': 'NO';
       return (
         <li key={move}>
-          <button onClick={() => this.jumpTo(move)}>{move} {calcola_posizione(move)} {desc}</button>
+          <button onClick={() => this.jumpTo(move)}> {calcola_posizione(move)} {desc} {inevid}</button>
         </li>
       );
     });
@@ -146,7 +151,7 @@ function calcola_posizione(indice){
   ];
   for (let i = 0; i < caselle.length; i++) {
       if(i == indice){
-        return "(" + caselle[i] + ")";
+        return "[" + caselle[i] + "]";
       }
   }
 }
