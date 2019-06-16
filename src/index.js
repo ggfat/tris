@@ -16,28 +16,48 @@ class Board extends React.Component {
       <Square
         value={this.props.squares[i]}
         onClick={() => this.props.onClick(i)}
+        key={i}
       />
     );
   }
 
+  renderRow(i,rows){
+    let leg = "";
+    if(i===0){
+      leg = 'd';
+    }
+    if(i===3){
+      leg = 'e';
+    }
+    if(i===6){
+      leg = 'f';
+    }
+    return (
+      <div className="board-row" key={i}>
+        <div className="legenda">{leg}</div>
+        {rows[i]}{rows[i+1]}{rows[i+2]}
+      </div>
+    );
+  }
+
   render() {
+    let rows = [];
+    for (let i = 0; i < 9; i++) {
+      rows[i] = this.renderSquare(i);
+    }
+
+    let element = [];
+    for (let i = 0; i < 9; i=i+3) {
+      element[i] = this.renderRow(i, rows);
+    }
+
     return (
       <div>
-        <div className="board-row">
-          {this.renderSquare(0)}
-          {this.renderSquare(1)}
-          {this.renderSquare(2)}
-        </div>
-        <div className="board-row">
-          {this.renderSquare(3)}
-          {this.renderSquare(4)}
-          {this.renderSquare(5)}
-        </div>
-        <div className="board-row">
-          {this.renderSquare(6)}
-          {this.renderSquare(7)}
-          {this.renderSquare(8)}
-        </div>
+        <div className="legenda"> </div>
+        <div className="legenda">a</div>
+        <div className="legenda">b</div>
+        <div className="legenda">c</div>
+        {element}
       </div>
     );
   }
@@ -51,11 +71,12 @@ class Game extends React.Component {
         {
           squares: Array(9).fill(null),
           posizione: Array(9).fill(null),
+          mossaAttiva: Array(9).fill(null),
+          currentM: Array(9).fill(null),
         }
       ],
       stepNumber: 0,
       xIsNext: true,
-      evidenza: false,
     };
   }
 
@@ -64,16 +85,23 @@ class Game extends React.Component {
     const current = history[history.length - 1];
     const squares = current.squares.slice();
     const posizione = current.posizione.slice();
+    const mossaAttiva = current.mossaAttiva.slice();
+    const currentM = current.currentM.slice();
     if (calculateWinner(squares) || squares[i]) {
       return;
     }
     squares[i] = this.state.xIsNext ? "X" : "O";
     posizione[i] = calcola_posizione(i);
+    mossaAttiva[this.state.stepNumber] = i;
+    resetMossa(currentM);
+    currentM[i] = "bold";
     this.setState({
       history: history.concat([
         {
           squares: squares,
-          posizione: posizione
+          posizione: posizione,
+          currentM: currentM,
+          mossaAttiva: mossaAttiva
         }
       ]),
       stepNumber: history.length,
@@ -85,26 +113,32 @@ class Game extends React.Component {
     this.setState({
       stepNumber: step,
       xIsNext: (step % 2) === 0,
-      evidenza: true,
     });
   }
+
+  rev() {
+     this.setState({
+       listItems: this.state.listItems.reverse()
+     });
+  }
+
 
   render() {
     const history = this.state.history;
     const current = history[this.state.stepNumber];
     const winner = calculateWinner(current.squares);
     const posizione = current.posizione;
-    const evidenza = current.evidenza;
-
+    const mossaAttiva = current.mossaAttiva;
+    const currentM = current.currentM;
     const moves = history.map((step, move) => {
+      const currentMossa = mossaAttiva[move-1];
+      const mossa = posizione[currentMossa] ? 'Mossa '+ posizione[currentMossa] : '';
       const desc = move ?
-        'Torna alla mossa #' + move :
+        'Vai alla mossa #' + move :
         'Start game';
-      const inevid = evidenza ?
-        'SI': 'NO';
       return (
         <li key={move}>
-          <button onClick={() => this.jumpTo(move)}> {calcola_posizione(move)} {desc} {inevid}</button>
+          <button className={currentM[currentMossa]} onClick={() => this.jumpTo(move)}>{desc}  </button> {mossa}
         </li>
       );
     });
@@ -116,6 +150,7 @@ class Game extends React.Component {
       status = "Turno del giocatore: " + (this.state.xIsNext ? "X" : "O");
     }
 
+
     return (
       <div className="game">
         <div className="game-board">
@@ -126,7 +161,7 @@ class Game extends React.Component {
         </div>
         <div className="game-info">
           <div>{status}</div>
-          <ol>{moves}</ol>
+          <ul>{moves}</ul>
         </div>
       </div>
     );
@@ -136,6 +171,11 @@ class Game extends React.Component {
 // ========================================
 ReactDOM.render(<Game />, document.getElementById("root"));
 
+function resetMossa(curM){
+  for (let i = 0; i < curM.length; i++) {
+    curM[i] = "";
+  }
+}
 
 function calcola_posizione(indice){
   const caselle = [
@@ -150,7 +190,7 @@ function calcola_posizione(indice){
     ['c','f'],
   ];
   for (let i = 0; i < caselle.length; i++) {
-      if(i == indice){
+      if(i === indice){
         return "[" + caselle[i] + "]";
       }
   }

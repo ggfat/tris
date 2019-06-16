@@ -7,7 +7,7 @@ ol, ul {
   padding-left: 30px;
 }
 
-.board-row:after {
+.board-row:after, .legenda:after {
   clear: both;
   content: "";
   display: table;
@@ -15,6 +15,20 @@ ol, ul {
 
 .status {
   margin-bottom: 10px;
+}
+
+.legenda{
+  float: left;
+  font-size: 18px;
+  line-height: 34px;
+  height: 34px;
+  text-align: center;
+  width: 34px;
+  color: #dddddd;
+}
+
+.bold{
+  font-weight: bold;
 }
 
 .square {
@@ -46,5 +60,6 @@ ol, ul {
 }
 
 .game-info {
-  margin-left: 20px;
+  margin-top: 30px;
+  margin-left: 50px;
 }
