@@ -63,6 +63,17 @@ class Board extends React.Component {
   }
 }
 
+class MyList extends React.Component {
+  render() {
+    return(
+       <li key={this.props.k}>
+        <button className={this.props.klass} onClick={() => this.props.onClick()}>{this.props.desc}</button> {this.props.mossa}
+       </li>
+    )
+  }
+}
+
+
 class Game extends React.Component {
   constructor(props) {
     super(props);
@@ -77,6 +88,7 @@ class Game extends React.Component {
       ],
       stepNumber: 0,
       xIsNext: true,
+  		ascendingOrder: true,
     };
   }
 
@@ -116,10 +128,10 @@ class Game extends React.Component {
     });
   }
 
-  rev() {
-     this.setState({
-       listItems: this.state.listItems.reverse()
-     });
+  toggleOrder() {
+  	this.setState({
+  		ascendingOrder: !this.state.ascendingOrder
+  	});
   }
 
 
@@ -131,16 +143,14 @@ class Game extends React.Component {
     const mossaAttiva = current.mossaAttiva;
     const currentM = current.currentM;
     const moves = history.map((step, move) => {
-      const currentMossa = mossaAttiva[move-1];
-      const mossa = posizione[currentMossa] ? 'Mossa '+ posizione[currentMossa] : '';
-      const desc = move ?
-        'Vai alla mossa #' + move :
-        'Start game';
-      return (
-        <li key={move}>
-          <button className={currentM[currentMossa]} onClick={() => this.jumpTo(move)}>{desc}  </button> {mossa}
-        </li>
-      );
+          const currentMossa = mossaAttiva[move-1];
+          const mossa = posizione[currentMossa] ? 'Mossa '+ posizione[currentMossa] : '';
+          const desc = move ?
+            'Vai alla mossa #' + move :
+            'Start game';
+          return (
+              <MyList klass={currentM[currentMossa]} key={move} k={move} desc={desc} onClick={() => this.jumpTo(move)} mossa={mossa} />
+          );
     });
 
     let status;
@@ -150,6 +160,12 @@ class Game extends React.Component {
       status = "Turno del giocatore: " + (this.state.xIsNext ? "X" : "O");
     }
 
+    //Add a toggle button that lets you sort the moves in either ascending or descending order.
+  	if (!this.state.ascendingOrder) {
+   		moves.sort(function(a,b) {
+    			return b.key - a.key;
+    		});
+   	}
 
     return (
       <div className="game">
@@ -161,7 +177,8 @@ class Game extends React.Component {
         </div>
         <div className="game-info">
           <div>{status}</div>
-          <ul>{moves}</ul>
+          <ol>{moves}</ol>
+          <button onClick={() => this.toggleOrder()}>Change order</button>
         </div>
       </div>
     );
