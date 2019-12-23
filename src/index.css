@@ -46,6 +46,14 @@ ol, ul {
   width: 34px;
 }
 
+.square.nero{
+  background: #ffffff;
+}
+
+.square.rosso{
+  background: #ff0000;
+}
+
 .square:focus {
   outline: none;
 }

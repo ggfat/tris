@@ -4,7 +4,7 @@ import './index.css';
 
 function Square(props) {
   return (
-    <button className="square" onClick={props.onClick}>
+    <button className={"square " + props.nomeclasse} onClick={props.onClick}>
       {props.value}
     </button>
   );
@@ -16,6 +16,7 @@ class Board extends React.Component {
       <Square
         value={this.props.squares[i]}
         onClick={() => this.props.onClick(i)}
+        nomeclasse={this.props.classequadrato[i]}
         key={i}
       />
     );
@@ -84,6 +85,7 @@ class Game extends React.Component {
           posizione: Array(9).fill(null),
           mossaAttiva: Array(9).fill(null),
           currentM: Array(9).fill(null),
+          classequadrato: Array(9).fill().map((v, i) => "nero"),
         }
       ],
       stepNumber: 0,
@@ -99,6 +101,7 @@ class Game extends React.Component {
     const posizione = current.posizione.slice();
     const mossaAttiva = current.mossaAttiva.slice();
     const currentM = current.currentM.slice();
+    const classequadrato = current.classequadrato.slice();
     if (calculateWinner(squares) || squares[i]) {
       return;
     }
@@ -113,7 +116,8 @@ class Game extends React.Component {
           squares: squares,
           posizione: posizione,
           currentM: currentM,
-          mossaAttiva: mossaAttiva
+          mossaAttiva: mossaAttiva,
+          classequadrato: classequadrato
         }
       ]),
       stepNumber: history.length,
@@ -146,8 +150,8 @@ class Game extends React.Component {
           const currentMossa = mossaAttiva[move-1];
           const mossa = posizione[currentMossa] ? 'Mossa '+ posizione[currentMossa] : '';
           const desc = move ?
-            'Vai alla mossa #' + move :
-            'Start game';
+            'Vai alla mossa #' + move + " --> " + current.classequadrato :
+            'Inizio gioco';
           return (
               <MyList klass={currentM[currentMossa]} key={move} k={move} desc={desc} onClick={() => this.jumpTo(move)} mossa={mossa} />
           );
@@ -156,6 +160,7 @@ class Game extends React.Component {
     let status;
     if (winner) {
       status = "Vincitore: " + winner;
+      current.classequadrato = ritornaquadratirossi(current.squares, current.classequadrato);
     } else {
       status = "Turno del giocatore: " + (this.state.xIsNext ? "X" : "O");
     }
@@ -172,13 +177,14 @@ class Game extends React.Component {
         <div className="game-board">
           <Board
             squares={current.squares}
+            classequadrato={current.classequadrato}
             onClick={i => this.handleClick(i)}
           />
         </div>
         <div className="game-info">
           <div>{status}</div>
           <ol>{moves}</ol>
-          <button onClick={() => this.toggleOrder()}>Change order</button>
+          <button onClick={() => this.toggleOrder()}>Cambia Ordine</button>
         </div>
       </div>
     );
@@ -212,6 +218,31 @@ function calcola_posizione(indice){
       }
   }
 }
+
+function ritornaquadratirossi(squares, classirosse){
+  const lines = [
+    [0, 1, 2],
+    [3, 4, 5],
+    [6, 7, 8],
+    [0, 3, 6],
+    [1, 4, 7],
+    [2, 5, 8],
+    [0, 4, 8],
+    [2, 4, 6]
+  ];
+  for (let i = 0; i < lines.length; i++) {
+    const [a, b, c] = lines[i];
+    if (squares[a] && squares[a] === squares[b] && squares[a] === squares[c]) {
+      for (let j = 0; j < [a, b, c].length; j++) {
+        let num = [a, b, c][j];
+        classirosse[num]= "rosso"
+      }
+      return classirosse;
+    }
+  }
+  return null;
+}
+
 
 
 function calculateWinner(squares) {
