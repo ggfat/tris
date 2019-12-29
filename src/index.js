@@ -150,7 +150,7 @@ class Game extends React.Component {
           const currentMossa = mossaAttiva[move-1];
           const mossa = posizione[currentMossa] ? 'Mossa '+ posizione[currentMossa] : '';
           const desc = move ?
-            'Vai alla mossa #' + move + " --> " + current.classequadrato :
+            'Vai alla mossa #' + move :
             'Inizio gioco';
           return (
               <MyList klass={currentM[currentMossa]} key={move} k={move} desc={desc} onClick={() => this.jumpTo(move)} mossa={mossa} />
@@ -162,7 +162,11 @@ class Game extends React.Component {
       status = "Vincitore: " + winner;
       current.classequadrato = ritornaquadratirossi(current.squares, current.classequadrato);
     } else {
-      status = "Turno del giocatore: " + (this.state.xIsNext ? "X" : "O");
+      if(this.state.stepNumber == 9){
+        status = "Pareggio";
+      }else{
+        status = "Turno del giocatore: " + (this.state.xIsNext ? "X" : "O");
+      }
     }
 
     //Add a toggle button that lets you sort the moves in either ascending or descending order.

@@ -71,3 +71,7 @@ ol, ul {
   margin-top: 30px;
   margin-left: 50px;
 }
+
+.game-board {
+    padding: 50px 50px;
+}
